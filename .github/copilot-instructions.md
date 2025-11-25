@@ -45,7 +45,7 @@ Central `scripts.js` contains:
 Modify `menu.html` dropdown sections:
 - **Page Examples** dropdown: `#base_menu` container
 - **Tasks** dropdown: `#sync_menu` container
-- URLs follow pattern: `/site/examples/` or `/site/tasks/`
+- URLs follow pattern: `/example-site/examples/` or `/example-site/tasks/`
 
 ### JavaScript Function Patterns
 - **Async operations**: Use `setTimeout()` for delays and loading states
