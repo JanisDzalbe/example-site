@@ -131,3 +131,25 @@ a.lorem:hover {
     color: white;
 }
 
+/* Status radio button styling */
+.status-radio-group {
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.status-radio-group label {
+    display: inline-block;
+    margin-right: 15px;
+    cursor: not-allowed;
+}
+
+.status-radio-group input[type=radio] {
+    margin-right: 5px;
+    cursor: not-allowed;
+}
+
+.status-radio-group input[type=radio]:disabled + label,
+.status-radio-group input[type=radio]:disabled {
+    opacity: 1;
+    cursor: not-allowed;
+}

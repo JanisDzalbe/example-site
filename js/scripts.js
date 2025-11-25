@@ -65,36 +65,21 @@ function showTextByClickingButton(is_seen) {
 }
 
 function numberValidation() {
-    var x, text, giveAnswer;
+    var x, text;
 
     x = document.getElementById("numb").value;
     document.getElementById("numb").className = "w3-input w3-border w3-pale-red required";
 
     if (!x || 0 === x.length || /^\s*$/.test(x)) {
         text = "You haven't entered anything";
-    } else if (x == 'bug') {
-        text = "Yes, this form has 6 <i>features</i>, which some people call <i>bugs</i> you just found 1";
     } else if (isNaN(x)) {
         text = "Please enter a number";
-    } else if (x < 0) {
-        text = ""
-    } else if (x == 666) {
-        text = "";
-        document.getElementById("numb").className = "w3-input w3-border w3-light-grey required";
-    } else if (x == 13) {
-        text = "Number is too small";
-        document.getElementById("numb").className = "w3-input w3-border w3-red required";
-    } else if (x == 42) {
-        text = ""
-        alert("Sorry you have asked the wrong answer");
-        document.getElementById("numb").value = null;
-        document.getElementById("numb").className = "w3-input w3-border w3-light-grey required";
-    } else if (x < 49) {
+    } else if (x < 50) {
         text = "Number is too small";
     } else if (x > 100) {
         text = "Number is too big";
     } else {
-        text = ""
+        text = "";
         alert("Square root of " + x + " is " + Math.sqrt(x).toFixed(2));
         document.getElementById("numb").value = null;
         document.getElementById("numb").className = "w3-input w3-border w3-light-grey required";
@@ -182,6 +167,31 @@ function openModalForEditPerson(index) {
 
 function openModalForEditPersonWithJob(index) {
     window.location = 'enter_a_new_person_with_a_job.html?id=' + index;
+}
+
+function openModalForAddPersonWithJobAndStatus() {
+    window.location = 'enter_a_new_person_with_job_and_status.html';
+}
+
+function openModalForEditPersonWithJobAndStatus(index) {
+    window.location = 'enter_a_new_person_with_job_and_status.html?id=' + index;
+}
+
+function getPersonWithJobAndStatus() {
+    let searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has("id")) {
+        document.getElementById("modal_button").innerHTML = "Edit";
+        var id = searchParams.get("id");
+        document.getElementById("modal_button").setAttribute("onclick", "editPersonWithJobAndStatus(" + id + ")");
+        var person = JSON.parse(localStorage.getItem("person" + id));
+        document.getElementById("name").value = person.name;
+        document.getElementById("job").value = person.job;
+        var status = person.status || "employee";
+        document.getElementById(status).checked = true;
+    } else {
+        document.getElementById("modal_button").innerHTML = "Add";
+        document.getElementsByClassName("clear-btn")[0].innerHTML = "<button class='w3-btn w3-white w3-border w3-left' onclick='openModalForAddPersonWithJobAndStatus()' id='addPersonBtn'>Clear all fields</button>";
+    }
 }
 
 function getPersonWithJob() {
@@ -301,6 +311,54 @@ function editPersonWithJob(index) {
     window.location = 'list_of_people_with_jobs.html';
 }
 
+function addPersonWithJobAndStatusToList() {
+    var pi = 0;
+    for (var i = 0; i < localStorage.length - 1; i++) {
+        while (localStorage.getItem("person" + pi) == null) {
+            pi++;
+        }
+        pi++;
+    }
+    
+    var status;
+    if (document.getElementById("contractor").checked) {
+        status = "contractor";
+    } else if (document.getElementById("intern").checked) {
+        status = "intern";
+    } else {
+        status = "employee";
+    }
+    
+    var p = {
+        name: document.getElementById("name").value,
+        job: document.getElementById("job").value,
+        status: status
+    };
+
+    localStorage.setItem("person" + pi, JSON.stringify(p));
+    window.location = 'list_of_people_random.html';
+    console.log(pi);
+}
+
+function editPersonWithJobAndStatus(index) {
+    var status;
+    if (document.getElementById("contractor").checked) {
+        status = "contractor";
+    } else if (document.getElementById("intern").checked) {
+        status = "intern";
+    } else {
+        status = "employee";
+    }
+    
+    var p = {
+        name: document.getElementById("name").value, 
+        job: document.getElementById("job").value,
+        status: status
+    };
+
+    localStorage.setItem("person" + index, JSON.stringify(p));
+    window.location = 'list_of_people_random.html';
+}
 
 function editPerson(index) {
     var language, gender;
@@ -346,14 +404,36 @@ function setNewPeople() {
     localStorage.setItem("reload", false);    
 }
 
-function resetListOfPeople() {
+function resetListOfPeople(randomize) {
     localStorage.clear();
-    var p1 = {name:"Mike", surname:"Kid", dob:"12/25/1986", job:"Web Designer", language:"English", gender:"male", status:"contractor"};
-    var p2 = {name:"Jill", surname:"Watson", dob:"06/06/1966", job:"Support", language:"Spanish", gender:"female", status:"intern"};
-    var p3 = {name:"Jane", surname:"Doe", dob:"04/01/2001", job:"Accountant", language:"English, French", gender:"female", status:"employee"};
-    localStorage.setItem("person0", JSON.stringify(p1));
-    localStorage.setItem("person1", JSON.stringify(p2));
-    localStorage.setItem("person2", JSON.stringify(p3));
+    var people = [
+        {name:"Mike", surname:"Kid", dob:"12/25/1986", job:"Web Designer", language:"English", gender:"male", status:"contractor"},
+        {name:"Jill", surname:"Watson", dob:"06/06/1966", job:"Support", language:"Spanish", gender:"female", status:"intern"},
+        {name:"Jane", surname:"Doe", dob:"04/01/2001", job:"Accountant", language:"English, French", gender:"female", status:"employee"},
+        {name:"John", surname:"Smith", dob:"03/15/1990", job:"Software Engineer", language:"English", gender:"male", status:"employee"},
+        {name:"Sarah", surname:"Johnson", dob:"08/22/1995", job:"Product Manager", language:"English, Spanish", gender:"female", status:"employee"},
+        {name:"Carlos", surname:"Garcia", dob:"11/30/1988", job:"Data Analyst", language:"Spanish, English", gender:"male", status:"contractor"},
+        {name:"Emily", surname:"Chen", dob:"02/14/1992", job:"UX Designer", language:"English, French", gender:"female", status:"employee"},
+        {name:"David", surname:"Brown", dob:"07/05/1985", job:"Project Manager", language:"English", gender:"male", status:"employee"},
+        {name:"Maria", surname:"Rodriguez", dob:"09/18/1998", job:"QA Engineer", language:"Spanish, French", gender:"female", status:"intern"},
+        {name:"Alex", surname:"Taylor", dob:"05/12/1993", job:"DevOps Engineer", language:"English", gender:"male", status:"contractor"}
+    ];
+    
+    // Randomize order if flag is set
+    if (randomize) {
+        for (var i = people.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = people[i];
+            people[i] = people[j];
+            people[j] = temp;
+        }
+    }
+    
+    // Store people in localStorage
+    for (var i = 0; i < people.length; i++) {
+        localStorage.setItem("person" + i, JSON.stringify(people[i]));
+    }
+    
     localStorage.setItem("reload", true);
     location.reload()
 }
@@ -365,8 +445,8 @@ function loadPeopleFromList() {
             pi++;
         }
         $("#listOfPeople").append(
-            "<div class=\"w3-padding-16\" ondrop=\"drop(event)\" ondragover=\"allowDrop(event)\"> " +
-            "<li draggable=\"true\" ondragstart=\"drag(event)\" id=\"person" + pi + "\">" +
+            "<div class=\"w3-padding-16\"> " +
+            "<li id=\"person" + pi + "\">" +
             "<span onclick=\"deletePerson(" + pi + ")\"  class=\"w3-closebtn closebtn w3-padding w3-margin-right w3-medium\">&times;</span>" + 
             "<span onclick=\"openModalForEditPerson(" + pi + ")\"  class=\"w3-closebtn editbtn w3-padding w3-margin-right w3-medium\">" +
             "<i class=\"fa fa-pencil\"></i>" +
@@ -392,8 +472,8 @@ function loadPeopleWithJobsFromList() {
             pi++;
         }
         $("#listOfPeople").append(
-            "<div class=\"w3-padding-16\" ondrop=\"drop(event)\" ondragover=\"allowDrop(event)\"> " +
-            "<li draggable=\"true\" ondragstart=\"drag(event)\" id=\"person" + pi + "\">" +
+            "<div class=\"w3-padding-16\"> " +
+            "<li id=\"person" + pi + "\">" +
             "<span onclick=\"deletePerson(" + pi + ")\"  class=\"w3-closebtn closebtn w3-padding w3-margin-right w3-medium\">&times;</span>" + 
             "<span onclick=\"openModalForEditPersonWithJob(" + pi + ")\"  class=\"w3-closebtn editbtn w3-padding w3-margin-right w3-medium\">" +
             "<i class=\"fa fa-pencil\"></i>" +
@@ -406,6 +486,60 @@ function loadPeopleWithJobsFromList() {
         pi++;
     }
 }
+
+function loadPeopleWithJobsFromListRandom() {
+    // Collect all person indices
+    var personIndices = [];
+    var pi = 0;
+    for (var i = 0; i < localStorage.length - 1; i++) {
+        while (localStorage.getItem("person" + pi) == null) {
+            pi++;
+        }
+        personIndices.push(pi);
+        pi++;
+    }
+    
+    // Shuffle the array using Fisher-Yates algorithm
+    for (var i = personIndices.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = personIndices[i];
+        personIndices[i] = personIndices[j];
+        personIndices[j] = temp;
+    }
+    
+    // Display people in random order
+    for (var i = 0; i < personIndices.length; i++) {
+        var personIndex = personIndices[i];
+        var person = JSON.parse(localStorage.getItem("person" + personIndex));
+        var status = person.status || "employee"; // Default to employee if no status
+        
+        // Create radio buttons without checked attribute
+        var statusRadios = 
+            "<div class=\"status-radio-group\">" +
+            "<label><input type=\"radio\" name=\"status" + personIndex + "\" value=\"contractor\" class=\"status-radio\" disabled> Contractor</label> " +
+            "<label><input type=\"radio\" name=\"status" + personIndex + "\" value=\"intern\" class=\"status-radio\" disabled> Intern</label> " +
+            "<label><input type=\"radio\" name=\"status" + personIndex + "\" value=\"employee\" class=\"status-radio\" disabled> Employee</label>" +
+            "</div>";
+        
+        $("#listOfPeople").append(
+            "<div class=\"w3-padding-16\"> " +
+            "<li id=\"person" + personIndex + "\">" +
+            "<span onclick=\"deletePerson(" + personIndex + ")\"  class=\"w3-closebtn closebtn w3-padding w3-margin-right w3-medium\">&times;</span>" + 
+            "<span onclick=\"openModalForEditPersonWithJobAndStatus(" + personIndex + ")\"  class=\"w3-closebtn editbtn w3-padding w3-margin-right w3-medium\">" +
+            "<i class=\"fa fa-pencil\"></i>" +
+            "</span>" +
+            "<span class=\"w3-xlarge name\">" + person.name + "</span></br>" +
+            "<span class=\"job\">" + person.job + "</span><br>" +
+            "<b>Status:</b> " + statusRadios +
+            "</li>" +
+            "</div>"
+            );
+        
+        // Set the checked property via JavaScript after elements are created
+        $("input[name='status" + personIndex + "'][value='" + status + "']").prop('checked', true);
+    }
+}
+
 function allowDrop(ev) {
     ev.preventDefault();
 }
@@ -528,5 +662,148 @@ function actShowResult(type, clear = false) {
             }
         }
     }
+}
+
+// Fitness Challenge Functions
+function setNewFitnessParticipants() {
+    resetFitnessChallenge();
+}
+
+function resetFitnessChallenge() {
+    // Clear all fitness-related localStorage items
+    for (var i = localStorage.length - 1; i >= 0; i--) {
+        var key = localStorage.key(i);
+        if (key && key.startsWith("participant")) {
+            localStorage.removeItem(key);
+        }
+    }
+    
+    // Set default participants with initial step counts
+    var p1 = {name: "Mike Kid", steps: 8500};
+    var p2 = {name: "Jill Watson", steps: 12000};
+    var p3 = {name: "Jane Doe", steps: 6500};
+    var p4 = {name: "John Smith", steps: 15000};
+    var p5 = {name: "Sarah Johnson", steps: 9800};
+    var p6 = {name: "Carlos Garcia", steps: 11200};
+    var p7 = {name: "Emily Chen", steps: 7300};
+    var p8 = {name: "David Brown", steps: 13500};
+    var p9 = {name: "Maria Rodriguez", steps: 10500};
+    var p10 = {name: "Alex Taylor", steps: 8900};
+    
+    localStorage.setItem("participant0", JSON.stringify(p1));
+    localStorage.setItem("participant1", JSON.stringify(p2));
+    localStorage.setItem("participant2", JSON.stringify(p3));
+    localStorage.setItem("participant3", JSON.stringify(p4));
+    localStorage.setItem("participant4", JSON.stringify(p5));
+    localStorage.setItem("participant5", JSON.stringify(p6));
+    localStorage.setItem("participant6", JSON.stringify(p7));
+    localStorage.setItem("participant7", JSON.stringify(p8));
+    localStorage.setItem("participant8", JSON.stringify(p9));
+    localStorage.setItem("participant9", JSON.stringify(p10));
+    localStorage.setItem("fitnessReload", true);
+    location.reload();
+}
+
+function loadFitnessParticipants() {
+    // Collect all participants
+    var participants = [];
+    var pi = 0;
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = "participant" + pi;
+        if (localStorage.getItem(key) != null) {
+            var participant = JSON.parse(localStorage.getItem(key));
+            participants.push({
+                index: pi,
+                name: participant.name,
+                steps: participant.steps
+            });
+        }
+        pi++;
+    }
+    
+    // Sort participants by steps (highest first)
+    participants.sort(function(a, b) {
+        return b.steps - a.steps;
+    });
+    
+    // Display sorted participants
+    $("#participantsList").empty();
+    for (var i = 0; i < participants.length; i++) {
+        var p = participants[i];
+        var medalIcon = "";
+        if (i === 0) {
+            medalIcon = "<i class=\"fa fa-trophy\" style=\"font-size:24px;color:gold;margin-right:10px;\"></i>";
+        } else if (i === 1) {
+            medalIcon = "<i class=\"fa fa-trophy\" style=\"font-size:24px;color:silver;margin-right:10px;\"></i>";
+        } else if (i === 2) {
+            medalIcon = "<i class=\"fa fa-trophy\" style=\"font-size:24px;color:#cd7f32;margin-right:10px;\"></i>";
+        }
+        
+        $("#participantsList").append(
+            "<div class=\"w3-padding-16\"> " +
+            "<li id=\"participant_display" + i + "\">" +
+            medalIcon +
+            "<span class=\"w3-large participant-name\">" + p.name + "</span>" +
+            "<span class=\"w3-right w3-tag w3-blue w3-round participant-steps\">" + p.steps.toLocaleString() + " steps</span>" +
+            "</li>" +
+            "</div>"
+        );
+    }
+}
+
+function openModalForAddSteps() {
+    // Clear previous values
+    document.getElementById("steps_input").value = "";
+    
+    // Populate the participant dropdown
+    var select = document.getElementById("participant_select");
+    select.innerHTML = "<option value=\"\" disabled selected>Choose participant</option>";
+    
+    var pi = 0;
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = "participant" + pi;
+        if (localStorage.getItem(key) != null) {
+            var participant = JSON.parse(localStorage.getItem(key));
+            var option = document.createElement("option");
+            option.value = pi;
+            option.text = participant.name;
+            select.appendChild(option);
+        }
+        pi++;
+    }
+    
+    // Show modal
+    document.getElementById('addStepsModal').style.display = 'block';
+}
+
+function addStepsToParticipant() {
+    var participantIndex = document.getElementById("participant_select").value;
+    var stepsToAdd = parseInt(document.getElementById("steps_input").value);
+    
+    // Validate inputs
+    if (!participantIndex || participantIndex === "") {
+        alert("Please select a participant");
+        return;
+    }
+    
+    if (!stepsToAdd || stepsToAdd < 0) {
+        alert("Please enter a valid number of steps");
+        return;
+    }
+    
+    // Get current participant data
+    var participant = JSON.parse(localStorage.getItem("participant" + participantIndex));
+    
+    // Add steps to current count
+    participant.steps += stepsToAdd;
+    
+    // Save updated participant
+    localStorage.setItem("participant" + participantIndex, JSON.stringify(participant));
+    
+    // Close modal
+    document.getElementById('addStepsModal').style.display = 'none';
+    
+    // Reload the list to show updated and re-sorted data
+    loadFitnessParticipants();
 }
 
