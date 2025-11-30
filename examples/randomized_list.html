@@ -1,0 +1,91 @@
+<html>
+  <head>
+    <title>Randomized List Example</title>
+    <link rel="stylesheet" type="text/css" href="../css/w3.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="../js/scripts.js"></script>
+  </head>
+  <body>
+    <div id="header"></div>
+    
+    <div class="w3-container">
+      <h2>Randomized List Example</h2>
+      <p>These 5 elements are displayed in random order on each page load.</p>
+      
+      <div id="randomized_container" class="w3-container">
+        <!-- Elements will be inserted here in random order -->
+      </div>
+    </div>
+
+    <script>
+      // Define the 5 elements with their data
+      const elements = [
+        {
+          id: 'element_1',
+          title: 'First Element',
+          paragraph: 'This is the first element in the original array. It contains important information about element one.',
+          inputValue: 'red'
+        },
+        {
+          id: 'element_2',
+          title: 'Second Element',
+          paragraph: 'The second element provides details about something completely different from the first.',
+          inputValue: 'yellow'
+        },
+        {
+          id: 'element_3',
+          title: 'Third Element',
+          paragraph: 'Element number three has its own unique characteristics and testing purposes.',
+          inputValue: 'blue'
+        },
+        {
+          id: 'element_4',
+          title: 'Fourth Element',
+          paragraph: 'This is the fourth element, positioned in the middle of our collection.',
+          inputValue: 'grey'
+        },
+        {
+          id: 'element_5',
+          title: 'Fifth Element',
+          paragraph: 'The fifth and final element completes our randomized list of test elements.',
+          inputValue: 'green'
+        }
+      ];
+
+      // Fisher-Yates shuffle algorithm
+      function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      }
+
+      // Randomize and render elements
+      $(document).ready(function() {
+        const shuffledElements = shuffleArray(elements);
+        const container = $('#randomized_container');
+
+        shuffledElements.forEach((element, index) => {
+          const elementHtml = `
+            <div class="w3-card w3-margin element-item" id="element">
+              <div class="w3-container">
+                <h3 class="element-title">${element.title}</h3>
+                <p class="element-paragraph">${element.paragraph}</p>
+                <label for="input_${element.id}">Input Field:</label>
+                <input type="text" id="input_${element.id}" class="w3-input w3-border element-input" readonly>
+              </div>
+            </div>
+          `;
+          container.append(elementHtml);
+          
+          // Set input value dynamically via JavaScript property (not via HTML attribute)
+          document.getElementById('input_' + element.id).value = element.inputValue;
+        });
+      });
+    </script>
+  </body>
+</html>
